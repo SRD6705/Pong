@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Pong</title>
+	<style>
+		#screen {
+			width: 800px;
+			height: 600px;
+			background-color: red;
+			border: 4px solid black;
+			position: relative;
+		}
+		.paddle {
+			width: 20px;
+			height: 100px;
+			background-color: white;
+			position: absolute;
+		}
+		.ball {
+			border-radius: 10px;
+			width: 20px;
+			height: 20px;
+			background-color: white;
+			position: absolute;
+		}
+		#player_1_score {
+			color: red;
+			text-align: center ;
+			float:left;
+			margin-left:25%;
+		}
+
+		#player_2_score {
+			color: red;
+			text-align: center ;
+			float:right;
+			margin-right:25%;
+		}
+
+		#score{
+			width:800px;
+		}
+		
+	</style>
+</head>
+<body>
+	<div id="screen">
+		<div class="paddle" id="paddle_1"></div>
+		<div class="paddle" id="paddle_2"></div>
+		<div class="ball" id="ball"></div>
+	</div>
+	<div id="score">
+		<div id="player_1_score"></div>
+		<div id="player_2_score"></div>
+	</div>
+	</div>
+	<script>
+	/*
+	TODO
+	1. Ball collision off of the ceiling
+	2. Control (player / computer -- choose one) of paddle two
+	3. Display and track scores (ball should reset after score)
+	4. Ball-paddle collisions (tricky!)
+	*/
+
+
+	var paddle_1_element = document.getElementById("paddle_1");
+	var paddle_2_element = document.getElementById("paddle_2");
+	var paddle_1_model = {
+		x: 20,
+		y: 200,
+		vy: 5
+	};
+	var paddle_2_model = {
+		x: 760,
+		y: 200,
+		vy: 5
+	};
+
+	var ball_element = document.getElementById("ball");
+
+	var ball_model = {
+		x: 400,
+		y: 300,
+		vx: 5,
+		vy: 5
+	};
+
+	var player_1_score_element = document.getElementById("player_1_score");
+	var player_1_score = 0;
+
+	var player_2_score_element = document.getElementById("player_2_score");
+	var player_2_score = 0;
+
+
+	function onMouseMove(evt) {
+		// commented parts = 1 player mouse change
+		// if (ball_model.x < 299){
+		paddle_1_model.y = evt.pageY - evt.target.offsetTop - 50;
+			// }else {
+			// paddle_2_model.y = evt.pageY - evt.target.offsetTop - 50;	
+		}
+	
+
+
+	//update
+	function update(){
+		//update the ball model position
+		ball_model.x = ball_model.x + ball_model.vx;
+		ball_model.y = ball_model.y + ball_model.vy;
+
+		paddle_2_model.y = paddle_2_model.y + paddle_2_model.vy;
+
+		//This is the update for paddle2 position
+		if (paddle_2_model.y > 600 - 100 && paddle_2_model.vy > 0){
+			paddle_2_model.vy = paddle_2_model.vy * -1;
+			
+		}
+		//checking if the paddle is at the top
+		if (paddle_2_model.y == 0 && paddle_2_model.vy < 0){
+			paddle_2_model.vy = paddle_2_model.vy * -1;
+		}
+		
+		//check if the ball is colliding with the edge
+		if (ball_model.y > 600 - 20 && ball_model.vy > 0) {
+			//bottom edge
+			//flip the y direction
+			ball_model.vy = ball_model.vy * -1;
+		}
+
+		// if (ball_model.y > paddle_2_model.y + 100 && ball_model.vx > 0 && ball_model.y > paddle_2_model.y) {
+		// 	ball_model.vx = ball_model.vx * -1;
+		// }
+			// if ball is colliding with top edge
+		if (ball_model.y <= 0 && ball_model.vy < 0){
+			// flip the y direction
+			ball_model.vy = ball_model.vy * -1;
+			
+		}
+		//if the ball and the paddle touch, then return ball 
+		// if (paddle_2_model.y - 100 < ball_model.y){
+			// || paddle_2_model.y < ball_model.y){
+			// ball_model.vx = ball_model.vx * -1;
+		
+		if (ball_model.x < paddle_1_model.x + 20 && ball_model.y < paddle_1_model.y + 100 && 
+			ball_model.y + 20 > paddle_1_model.y && ball_model.x + 20 > paddle_1_model.x) {
+		
+			ball_model.vx = ball_model.vx * -1;	
+			// ball_model.vy = ball_model.vy * -1;
+		}
+		if (ball_model.x < paddle_2_model.x + 20 && ball_model.y < paddle_2_model.y + 100 && 
+			ball_model.y + 20 > paddle_2_model.y && ball_model.x + 20 > paddle_2_model.x){
+			ball_model.vx = ball_model.vx * -1;	
+			// ball_model.vy = ball_model.vy * -1;
+		}	
+		// Reset ball to middle if it goes passes paddle_model_1 or paddle_model_2
+		if (ball_model.x < -25){
+			player_2_score += 1;
+			 ball_model = {
+				x: 300,
+				y: 300,
+				vx: 5,
+				vy: 5
+						};
+		}
+
+		if(ball_model.x > 825){
+			player_1_score += 1;
+			 ball_model = {
+				x: 300,
+				y: 300,
+				vx: 5,
+				vy: 5
+						};
+		}
+	}
+	// If the ball passes paddle_1.y or paddle_2.y, reset the game. 
+	// function reset(){
+		
+
+
+
+
+
+
+
+
+	// }
+	//draw
+	function draw() {
+		//draw paddle 1
+		paddle_1_element.style.top = paddle_1_model.y + "px";
+		paddle_1_element.style.left = paddle_1_model.x + "px";
+		//draw paddle 2
+		paddle_2_element.style.top = paddle_2_model.y + "px";
+		paddle_2_element.style.left = paddle_2_model.x + "px";
+
+		//draw the ball
+		ball_element.style.top = ball_model.y + "px";
+		ball_element.style.left = ball_model.x + "px";
+
+		//draw the players' scores
+		player_1_score_element.innerHTML = player_1_score;
+		player_2_score_element.innerHTML = player_2_score;
+	}
+
+	function loop() {
+		update();
+		draw();
+	}
+
+	document.getElementById("screen").onmousemove = onMouseMove;
+	setInterval(loop, 1000/60);
+
+
+	</script>
+</body>
+</html>
